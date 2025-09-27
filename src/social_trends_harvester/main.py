@@ -386,4 +386,10 @@ async def clear_cache():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")  # nosec B104
+    uvicorn.run(
+        "src.main:app",
+        host="0.0.0.0",  # nosec B104
+        port=8000,
+        reload=True,
+        log_level="info",
+    )
