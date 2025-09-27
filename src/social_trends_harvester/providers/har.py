@@ -257,8 +257,8 @@ class HARProvider(TrendsProvider):
                 # Try parsing ISO format
                 dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
                 return int(dt.timestamp())
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Failed to parse timestamp '{timestamp}': {e}")
 
         return int(datetime.now().timestamp())
 

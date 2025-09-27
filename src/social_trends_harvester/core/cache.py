@@ -57,7 +57,7 @@ class CacheManager:
         """Generate cache key from namespace and parameters."""
         # Sort params for consistent keys
         sorted_params = json.dumps(params, sort_keys=True)
-        key_hash = hashlib.md5(sorted_params.encode()).hexdigest()[:8]
+        key_hash = hashlib.md5(sorted_params.encode(), usedforsecurity=False).hexdigest()[:8]
         return f"sth:{namespace}:{key_hash}"
 
     async def get(self, namespace: str, params: dict[str, Any]) -> Optional[Any]:

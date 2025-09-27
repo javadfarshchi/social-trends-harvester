@@ -13,7 +13,7 @@ class Settings:
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
 
     # Server Configuration
-    HOST: str = os.getenv("HOST", "0.0.0.0")
+    HOST: str = os.getenv("HOST", "0.0.0.0")  # nosec B104 - intentional binding to all interfaces
     PORT: int = int(os.getenv("PORT", "8000"))
 
     # Cache Configuration
