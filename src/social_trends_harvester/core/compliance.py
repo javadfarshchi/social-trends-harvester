@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import time
+from typing import Optional
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
@@ -16,7 +17,7 @@ class ComplianceManager:
 
     def __init__(self):
         """Initialize compliance manager."""
-        self.robots_cache: dict[str, RobotFileParser] = {}
+        self.robots_cache: dict[str, Optional[RobotFileParser]] = {}
         self.rate_limiters: dict[str, RateLimiter] = {}
         self.user_agent = (
             "SocialTrendsHarvester/1.0 (+https://github.com/javadfarshchi/social-trends-harvester)"
@@ -82,18 +83,17 @@ class ComplianceManager:
             if not self._request_session:
                 await self.initialize()
 
-            response = await self._request_session.get(robots_url)
+            if not self._request_session:
+                raise Exception("Failed to initialize request session")
 
             robots_parser = RobotFileParser()
             robots_parser.set_url(robots_url)
 
-            if response.status_code == 200:
-                robots_content = response.text
-                robots_parser.read_string(robots_content)
+            try:
+                robots_parser.read()
                 logger.info(f"Loaded robots.txt for {domain}")
-            else:
-                # If robots.txt doesn't exist, assume everything is allowed
-                robots_parser.read_string("")
+            except Exception:
+                # If robots.txt doesn't exist or can't be read, assume everything is allowed
                 logger.info(f"No robots.txt found for {domain}, assuming allowed")
 
             self.robots_cache[domain] = robots_parser
@@ -138,13 +138,18 @@ class ComplianceManager:
                 return False
 
             # Get crawl delay for our user agent
-            crawl_delay = robots_parser.crawl_delay(self.user_agent)
-            if crawl_delay is None:
-                crawl_delay = robots_parser.crawl_delay("*")
+            crawl_delay_str = robots_parser.crawl_delay(self.user_agent)
+            if crawl_delay_str is None:
+                crawl_delay_str = robots_parser.crawl_delay("*")
 
-            if crawl_delay is not None and crawl_delay > 0:
-                logger.info(f"Respecting crawl-delay of {crawl_delay}s for {domain}")
-                await asyncio.sleep(crawl_delay)
+            if crawl_delay_str is not None:
+                try:
+                    crawl_delay = float(crawl_delay_str)
+                    if crawl_delay > 0:
+                        logger.info(f"Respecting crawl-delay of {crawl_delay}s for {domain}")
+                        await asyncio.sleep(crawl_delay)
+                except (ValueError, TypeError):
+                    logger.warning(f"Invalid crawl-delay value: {crawl_delay_str}")
 
             return True
 
@@ -209,10 +214,10 @@ class RateLimiter:
 
         # Check rate limit window
         if not self.requests:
-            return 0
+            return 0.0
 
-        oldest_request = min(self.requests)
-        return max(0, 60 - (now - oldest_request))
+        oldest_request: float = min(self.requests)
+        return max(0.0, 60.0 - (now - oldest_request))
 
 
 class EthicalHeaders:

@@ -2,6 +2,7 @@
 
 import logging
 from contextlib import asynccontextmanager
+from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -63,7 +64,7 @@ class TrendsService:
         await compliance_manager.cleanup()
         logger.info("Trends service cleaned up")
 
-    def get_provider(self, provider_name: str = None):
+    def get_provider(self, provider_name: Optional[str] = None):
         """Get a provider by name."""
         if provider_name is None:
             provider_name = self.default_provider

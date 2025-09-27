@@ -62,7 +62,7 @@ class HARProvider(TrendsProvider):
             raise ValidationError("Count must be between 1 and 60")
 
         # Get trending data for region
-        region_data = self._parsed_data["trending"].get(region, [])
+        region_data: list[dict[str, Any]] = self._parsed_data["trending"].get(region, [])
 
         if not region_data:
             logger.warning(f"No trending data available for region {region} in HAR files")
@@ -96,7 +96,7 @@ class HARProvider(TrendsProvider):
         clean_hashtag = hashtag.strip().lower().lstrip("#")
 
         # Get hashtag data
-        hashtag_data = self._parsed_data["hashtags"].get(clean_hashtag, [])
+        hashtag_data: list[dict[str, Any]] = self._parsed_data["hashtags"].get(clean_hashtag, [])
 
         if not hashtag_data:
             logger.warning(f"No data available for hashtag #{clean_hashtag} in HAR files")
