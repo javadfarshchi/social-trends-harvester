@@ -1,0 +1,192 @@
+{
+  "US": [
+    {
+      "id": "fixture_trending_001",
+      "description": "Amazing dance moves that everyone is trying! 💃",
+      "author": "creator_sample1",
+      "author_id": "sample_user_1",
+      "created_at": 1699920000,
+      "stats": {
+        "view_count": 2500000,
+        "like_count": 125000,
+        "comment_count": 8500,
+        "share_count": 15000
+      },
+      "hashtags": ["dance", "trending", "viral", "fyp"],
+      "mentions": ["@frienduser"],
+      "category": "entertainment",
+      "language": "en",
+      "media_type": "video",
+      "duration": 30,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Popular Dance Beat 2024",
+      "audio_artist": "Sample Artist",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_trending_002", 
+      "description": "Quick cooking hack that will change your life! 🍳",
+      "author": "chef_demo",
+      "author_id": "sample_user_2",
+      "created_at": 1699910000,
+      "stats": {
+        "view_count": 1800000,
+        "like_count": 95000,
+        "comment_count": 12000,
+        "share_count": 25000
+      },
+      "hashtags": ["cooking", "lifehack", "recipe", "kitchen"],
+      "mentions": [],
+      "category": "lifestyle",
+      "language": "en",
+      "media_type": "video",
+      "duration": 45,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Upbeat Kitchen Sounds",
+      "audio_artist": "Demo Music",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_trending_003",
+      "description": "Pet compilation that will make you smile! 🐕🐱",
+      "author": "pet_lover_demo",
+      "author_id": "sample_user_3", 
+      "created_at": 1699900000,
+      "stats": {
+        "view_count": 3200000,
+        "like_count": 180000,
+        "comment_count": 6500,
+        "share_count": 45000
+      },
+      "hashtags": ["pets", "cute", "animals", "wholesome"],
+      "mentions": [],
+      "category": "animals",
+      "language": "en",
+      "media_type": "video",
+      "duration": 60,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Feel Good Melody",
+      "audio_artist": "Happy Tunes",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_trending_004",
+      "description": "Study tips that actually work! 📚✨",
+      "author": "study_guru",
+      "author_id": "sample_user_4",
+      "created_at": 1699890000,
+      "stats": {
+        "view_count": 950000,
+        "like_count": 75000,
+        "comment_count": 15000,
+        "share_count": 8000
+      },
+      "hashtags": ["study", "productivity", "student", "tips"],
+      "mentions": [],
+      "category": "education",
+      "language": "en",
+      "media_type": "video",
+      "duration": 90,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Focus Music",
+      "audio_artist": "Study Sounds",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_trending_005",
+      "description": "Fashion trends for this season! 👗✨",
+      "author": "fashion_sample",
+      "author_id": "sample_user_5",
+      "created_at": 1699880000,
+      "stats": {
+        "view_count": 1400000,
+        "like_count": 85000,
+        "comment_count": 9500,
+        "share_count": 12000
+      },
+      "hashtags": ["fashion", "style", "outfit", "trend"],
+      "mentions": ["@stylebrand"],
+      "category": "fashion",
+      "language": "en",
+      "media_type": "video",
+      "duration": 35,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Runway Beat",
+      "audio_artist": "Fashion Sounds",
+      "platform": "sample_platform"
+    }
+  ],
+  "GB": [
+    {
+      "id": "fixture_trending_gb_001",
+      "description": "British comedy sketch that's got everyone laughing! 😂",
+      "author": "comedy_uk",
+      "author_id": "sample_user_gb_1",
+      "created_at": 1699920000,
+      "stats": {
+        "view_count": 850000,
+        "like_count": 45000,
+        "comment_count": 3200,
+        "share_count": 6500
+      },
+      "hashtags": ["comedy", "british", "humor", "sketch"],
+      "mentions": [],
+      "category": "comedy",
+      "language": "en-GB",
+      "media_type": "video",
+      "duration": 40,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Comedy Timing",
+      "audio_artist": "UK Comedy",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_trending_gb_002",
+      "description": "London street food tour! 🍟🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "author": "london_eats",
+      "author_id": "sample_user_gb_2",
+      "created_at": 1699910000,
+      "stats": {
+        "view_count": 650000,
+        "like_count": 32000,
+        "comment_count": 2800,
+        "share_count": 4200
+      },
+      "hashtags": ["london", "food", "streetfood", "british"],
+      "mentions": [],
+      "category": "food",
+      "language": "en-GB",
+      "media_type": "video",
+      "duration": 75,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "London Vibes",
+      "audio_artist": "City Sounds",
+      "platform": "sample_platform"
+    }
+  ],
+  "CA": [
+    {
+      "id": "fixture_trending_ca_001",
+      "description": "Winter sports in the Canadian Rockies! 🏔️⛷️",
+      "author": "mountain_life_ca",
+      "author_id": "sample_user_ca_1",
+      "created_at": 1699920000,
+      "stats": {
+        "view_count": 720000,
+        "like_count": 38000,
+        "comment_count": 2100,
+        "share_count": 5500
+      },
+      "hashtags": ["canada", "skiing", "winter", "mountains"],
+      "mentions": [],
+      "category": "sports",
+      "language": "en",
+      "media_type": "video",
+      "duration": 55,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Mountain Adventure",
+      "audio_artist": "Nature Sounds",
+      "platform": "sample_platform"
+    }
+  ]
+}

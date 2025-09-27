@@ -1,0 +1,364 @@
+{
+  "info": {
+    "name": "Social Trends Harvester API",
+    "description": "Platform-agnostic social media trends API with compliance features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/healthz",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "healthz"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Providers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "providers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Compliance Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/compliance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "compliance"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Trending Content",
+      "item": [
+        {
+          "name": "Get Trending (Default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trending (Mock Provider)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=mock&region=US&count=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "region",
+                  "value": "US"
+                },
+                {
+                  "key": "count",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trending (GB Region)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=mock&region=GB&count=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "region",
+                  "value": "GB"
+                },
+                {
+                  "key": "count",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trending (HAR Provider)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=har&region=US&count=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "har"
+                },
+                {
+                  "key": "region",
+                  "value": "US"
+                },
+                {
+                  "key": "count",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Hashtag Content",
+      "item": [
+        {
+          "name": "Get Hashtag Content - Trending",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hashtag/trending?provider=mock&region=US&count=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "hashtag", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "region",
+                  "value": "US"
+                },
+                {
+                  "key": "count",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Hashtag Content - Viral",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hashtag/viral?provider=mock&region=US&count=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "hashtag", "viral"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "region",
+                  "value": "US"
+                },
+                {
+                  "key": "count",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Hashtag Content - Dance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/hashtag/dance?provider=mock&region=US&count=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "hashtag", "dance"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "region",
+                  "value": "US"
+                },
+                {
+                  "key": "count",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cache Management",
+      "item": [
+        {
+          "name": "Get Cache Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cache/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cache", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Cache",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cache/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cache", "clear"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Testing",
+      "item": [
+        {
+          "name": "Invalid Count (Should Return 400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=mock&count=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "count",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Provider (Should Return 400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=nonexistent&count=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "nonexistent"
+                },
+                {
+                  "key": "count",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Count Too High (Should Return 400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trending?provider=mock&count=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trending"],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "mock"
+                },
+                {
+                  "key": "count",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

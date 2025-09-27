@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "instanceId": "social-trends-harvester-example"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start-node",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://social-trends-harvester:8000/api/v1/trending",
+        "options": {
+          "qs": {
+            "provider": "mock",
+            "region": "US",
+            "count": "10"
+          }
+        }
+      },
+      "id": "get-trending",
+      "name": "Get Trending Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.total}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "check-results",
+      "name": "Check Results",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Process trending items\nconst items = $input.first().json.items;\nconst processedItems = [];\n\nfor (const item of items) {\n  // Filter high-engagement content\n  if (item.stats.view_count > 100000) {\n    processedItems.push({\n      id: item.id,\n      description: item.description,\n      author: item.author,\n      view_count: item.stats.view_count,\n      like_count: item.stats.like_count,\n      hashtags: item.hashtags,\n      created_at: new Date(item.created_at * 1000).toISOString(),\n      engagement_rate: (item.stats.like_count / item.stats.view_count * 100).toFixed(2) + '%'\n    });\n  }\n}\n\nreturn processedItems.map(item => ({json: item}));"
+      },
+      "id": "process-trending",
+      "name": "Process High-Engagement Content",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://social-trends-harvester:8000/api/v1/hashtag/{{$json.hashtags[0]}}",
+        "options": {
+          "qs": {
+            "provider": "mock",
+            "region": "US",
+            "count": "5"
+          }
+        }
+      },
+      "id": "get-hashtag-content",
+      "name": "Get Related Hashtag Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Combine trending and hashtag data\nconst trendingData = $input.first().json;\nconst hashtagData = $input.last().json;\n\nreturn [{\n  json: {\n    trending_item: trendingData,\n    related_hashtag_content: hashtagData.items || [],\n    analysis: {\n      trending_hashtags: trendingData.hashtags,\n      related_content_count: hashtagData.total || 0,\n      timestamp: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "combine-data",
+      "name": "Combine Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "console.log('No trending content found');\nreturn [{json: {message: 'No trending content available'}}];"
+      },
+      "id": "no-results",
+      "name": "No Results",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Trending Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Trending Content": {
+      "main": [
+        [
+          {
+            "node": "Check Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Results": {
+      "main": [
+        [
+          {
+            "node": "Process High-Engagement Content",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process High-Engagement Content": {
+      "main": [
+        [
+          {
+            "node": "Get Related Hashtag Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Related Hashtag Content": {
+      "main": [
+        [
+          {
+            "node": "Combine Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-11-15T10:00:00.000Z",
+      "updatedAt": "2024-11-15T10:00:00.000Z",
+      "id": "social-trends",
+      "name": "social-trends"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2024-11-15T10:00:00.000Z",
+  "versionId": "1"
+}

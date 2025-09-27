@@ -1,0 +1,79 @@
+services:
+  # Redis cache service (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: social-trends-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Social Trends Harvester API service
+  social-trends-harvester:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: social-trends-harvester
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CACHE_TTL_S=300
+      - LOG_LEVEL=INFO
+      - RATE_LIMIT_REQUESTS=10
+      - REQUEST_TIMEOUT=30
+    env_file:
+      - ../.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../src:/app/src:ro
+      - ../tests/fixtures:/app/tests/fixtures:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # n8n service (for workflow integration)
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: social-trends-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n-workflows:/home/node/.n8n/workflows:ro
+    depends_on:
+      social-trends-harvester:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+    driver: local
+  n8n_data:
+    driver: local
+
+networks:
+  default:
+    name: social-trends-network

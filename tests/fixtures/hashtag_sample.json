@@ -1,0 +1,221 @@
+{
+  "trending": [
+    {
+      "id": "fixture_hashtag_trending_001",
+      "description": "What's trending right now! Check out this amazing content 🔥",
+      "author": "trend_spotter",
+      "author_id": "sample_hashtag_user_1",
+      "created_at": 1699925000,
+      "stats": {
+        "view_count": 1200000,
+        "like_count": 65000,
+        "comment_count": 4500,
+        "share_count": 8900
+      },
+      "hashtags": ["trending", "viral", "popular", "new"],
+      "mentions": [],
+      "category": "general",
+      "language": "en",
+      "media_type": "video",
+      "duration": 25,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Trending Sound",
+      "audio_artist": "Viral Audio",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_hashtag_trending_002",
+      "description": "Join the trending challenge! Everyone's doing it 💪",
+      "author": "challenge_master",
+      "author_id": "sample_hashtag_user_2",
+      "created_at": 1699920000,
+      "stats": {
+        "view_count": 980000,
+        "like_count": 52000,
+        "comment_count": 3200,
+        "share_count": 7500
+      },
+      "hashtags": ["trending", "challenge", "participate", "fun"],
+      "mentions": ["@friendchallenge"],
+      "category": "challenge",
+      "language": "en",
+      "media_type": "video",
+      "duration": 30,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Challenge Beat",
+      "audio_artist": "Challenge Music",
+      "platform": "sample_platform"
+    }
+  ],
+  "viral": [
+    {
+      "id": "fixture_hashtag_viral_001",
+      "description": "This went viral overnight! Can't believe it 🤯",
+      "author": "viral_creator",
+      "author_id": "sample_hashtag_user_3",
+      "created_at": 1699918000,
+      "stats": {
+        "view_count": 5500000,
+        "like_count": 275000,
+        "comment_count": 18500,
+        "share_count": 45000
+      },
+      "hashtags": ["viral", "overnight", "explosion", "wow"],
+      "mentions": [],
+      "category": "viral",
+      "language": "en",
+      "media_type": "video",
+      "duration": 15,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Viral Moment",
+      "audio_artist": "Explosive Sound",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_hashtag_viral_002",
+      "description": "Another viral hit! This is spreading everywhere 🌍",
+      "author": "global_viral",
+      "author_id": "sample_hashtag_user_4",
+      "created_at": 1699915000,
+      "stats": {
+        "view_count": 3800000,
+        "like_count": 190000,
+        "comment_count": 12000,
+        "share_count": 32000
+      },
+      "hashtags": ["viral", "global", "everywhere", "spreading"],
+      "mentions": [],
+      "category": "viral",
+      "language": "en",
+      "media_type": "video",
+      "duration": 20,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Global Hit",
+      "audio_artist": "Worldwide Sounds",
+      "platform": "sample_platform"
+    }
+  ],
+  "fyp": [
+    {
+      "id": "fixture_hashtag_fyp_001",
+      "description": "Hope this reaches your FYP! Made with love ❤️",
+      "author": "fyp_creator",
+      "author_id": "sample_hashtag_user_5",
+      "created_at": 1699922000,
+      "stats": {
+        "view_count": 850000,
+        "like_count": 42000,
+        "comment_count": 2800,
+        "share_count": 5200
+      },
+      "hashtags": ["fyp", "foryou", "algorithm", "reach"],
+      "mentions": [],
+      "category": "general",
+      "language": "en",
+      "media_type": "video",
+      "duration": 35,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "FYP Sound",
+      "audio_artist": "Algorithm Music",
+      "platform": "sample_platform"
+    }
+  ],
+  "dance": [
+    {
+      "id": "fixture_hashtag_dance_001",
+      "description": "New dance moves dropping! Try to keep up 💃🕺",
+      "author": "dance_instructor",
+      "author_id": "sample_hashtag_user_6",
+      "created_at": 1699917000,
+      "stats": {
+        "view_count": 1500000,
+        "like_count": 85000,
+        "comment_count": 6200,
+        "share_count": 12000
+      },
+      "hashtags": ["dance", "moves", "choreography", "tutorial"],
+      "mentions": ["@dancepartner"],
+      "category": "dance",
+      "language": "en",
+      "media_type": "video",
+      "duration": 45,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Dance Track 2024",
+      "audio_artist": "Beat Master",
+      "platform": "sample_platform"
+    },
+    {
+      "id": "fixture_hashtag_dance_002",
+      "description": "Smooth dance transition! How did I do? Rate 1-10 ⭐",
+      "author": "smooth_dancer",
+      "author_id": "sample_hashtag_user_7",
+      "created_at": 1699912000,
+      "stats": {
+        "view_count": 920000,
+        "like_count": 58000,
+        "comment_count": 4100,
+        "share_count": 7800
+      },
+      "hashtags": ["dance", "smooth", "transition", "rate"],
+      "mentions": [],
+      "category": "dance",
+      "language": "en",
+      "media_type": "video",
+      "duration": 25,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Smooth Transitions",
+      "audio_artist": "Flow Beats",
+      "platform": "sample_platform"
+    }
+  ],
+  "cooking": [
+    {
+      "id": "fixture_hashtag_cooking_001",
+      "description": "Easy 5-minute recipe everyone should know! 👨‍🍳",
+      "author": "quick_chef",
+      "author_id": "sample_hashtag_user_8",
+      "created_at": 1699914000,
+      "stats": {
+        "view_count": 2100000,
+        "like_count": 115000,
+        "comment_count": 8900,
+        "share_count": 18500
+      },
+      "hashtags": ["cooking", "recipe", "quick", "easy"],
+      "mentions": [],
+      "category": "cooking",
+      "language": "en",
+      "media_type": "video",
+      "duration": 60,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Kitchen Vibes",
+      "audio_artist": "Cooking Sounds",
+      "platform": "sample_platform"
+    }
+  ],
+  "generic": [
+    {
+      "id": "fixture_hashtag_generic_001",
+      "description": "Just some random content for testing purposes 🧪",
+      "author": "test_user",
+      "author_id": "sample_hashtag_user_9",
+      "created_at": 1699916000,
+      "stats": {
+        "view_count": 150000,
+        "like_count": 8500,
+        "comment_count": 650,
+        "share_count": 1200
+      },
+      "hashtags": ["test", "sample", "demo", "example"],
+      "mentions": [],
+      "category": "test",
+      "language": "en",
+      "media_type": "video",
+      "duration": 20,
+      "dimensions": {"width": 1080, "height": 1920},
+      "audio_title": "Test Audio",
+      "audio_artist": "Demo Music",
+      "platform": "sample_platform"
+    }
+  ]
+}

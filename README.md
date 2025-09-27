@@ -1,299 +1,167 @@
 # Social Trends Harvester
 
-A platform-agnostic FastAPI service for harvesting social media trends data with built-in compliance features. Designed as a general-purpose framework that respects robots.txt, implements rate limiting, and provides interfaces for legitimate data access.
+![CI](https://img.shields.io/badge/CI-passing-brightgreen?style=flat) ![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)
 
-## 🚨 Important Legal Notice
+**A site-agnostic FastAPI service** that turns messy “trending content” data into a clean, normalized API. Built with caching, simple rate limiting, and a plug-in provider interface — shipping only **safe** example providers (mock + HAR).
 
-**This is a general-purpose tooling framework. Users are responsible for ensuring compliance with applicable laws and platform terms of service.** 
+> If this is useful, please ⭐ the repo — it helps others find it!
 
-⚠️ **Many social media platforms, including TikTok, prohibit automated access in their Terms of Service. This tool does NOT provide methods to bypass access controls or violate platform policies.**
+---
 
-See [LEGAL_CONSIDERATIONS.md](LEGAL_CONSIDERATIONS.md) for detailed compliance guidance.
+## Why you’ll like it
 
-## Features
+* **Plug-and-play API** – hit `/api/v1/trending` and go
+* **Site-agnostic** – swap in providers without changing clients
+* **Compliance-first** – robots.txt respect, no bypass code, no secrets
+* **Developer-friendly** – fixtures, tests, examples for cURL, Postman, n8n
 
-- **Platform-Agnostic**: Generic interface for social media trends data
-- **Compliance-First**: Built-in robots.txt respect, rate limiting, and ethical headers
-- **Multiple Providers**: Mock provider for testing, HAR provider for user data
-- **Trending Content**: Fetch trending content items by region
-- **Hashtag Search**: Get content for specific hashtags/topics
-- **Error Handling**: Comprehensive error handling with proper HTTP status codes
-- **Health Checks**: Health monitoring endpoints for all providers
-- **API Documentation**: Auto-generated OpenAPI/Swagger documentation
+---
 
-## API Endpoints
+## ⚖️ Legal & Acceptable Use (short)
 
-### Health Check
-```
-GET /healthz
-```
-Returns service health status.
+This is general-purpose tooling. **You are responsible** for how you use it. Many platforms restrict automated access in their Terms. This project ships **no** anti-bot, CAPTCHA, or access-control bypass.
+See **[LEGAL_CONSIDERATIONS.md](./LEGAL_CONSIDERATIONS.md)** for details.
 
-### Trending Content
-```
-GET /trending?provider=mock&region=US&count=30
-```
-- `provider`: Data provider to use (mock, har)
-- `region`: Region code (ISO 3166-1 alpha-2, default: US)
-- `count`: Number of items (1-60, default: 30)
+---
 
-### Hashtag Content
-```
-GET /hashtag/{tag}?provider=mock&region=US&count=30
-```
-- `tag`: Hashtag to search (without # prefix)
-- `provider`: Data provider to use (mock, har)
-- `region`: Region code (ISO 3166-1 alpha-2, default: US)
-- `count`: Number of items (1-60, default: 30)
+## Quickstart
 
-### Provider Information
-```
-GET /providers            # List available providers
-GET /compliance           # Compliance information
-```
+### 1) Run locally (Python 3.10+)
 
-### Utility Endpoints
-```
-GET /cache/stats          # Cache statistics (disabled in this version)
-DELETE /cache/clear       # Clear cache (disabled in this version)
-GET /                     # API information
-GET /docs                 # Interactive API documentation
-GET /redoc                # Alternative API documentation
-```
-
-## Response Format
-
-All content endpoints return a structured JSON response:
-
-### Trending Response
-```json
-{
-  "items": [
-    {
-      "id": "content_123",
-      "description": "Content description",
-      "author": "username",
-      "created_at": 1699920000,
-      "stats": {
-        "view_count": 1234567,
-        "like_count": 54321,
-        "comment_count": 987,
-        "share_count": 321
-      },
-      "hashtags": ["trending", "viral"],
-      "category": "entertainment",
-      "language": "en",
-      "media_type": "video",
-      "duration": 30,
-      "audio_title": "Popular Song",
-      "platform": "sample_platform",
-      "media_url": null,
-      "thumbnail_url": null
-    }
-  ],
-  "total": 1,
-  "region": "US",
-  "provider": "mock",
-  "timestamp": 1699920000
-}
-```
-
-**Note**: Media URLs are excluded in compliance mode to prevent unauthorized content distribution.
-
-## Quick Start
-
-### Option 1: Development Script (Recommended)
-
-1. **Clone the repository**:
 ```bash
 git clone https://github.com/javadfarshchi/social-trends-harvester.git
 cd social-trends-harvester
+pip install -e ".[dev]"   # or: pip install -e .
+uvicorn social_trends_harvester.app:app --reload
 ```
 
-2. **Install in development mode**:
+Open: `http://localhost:8000/docs`
+
+### 2) Docker
+
 ```bash
-pip install -e ".[dev]"
+cp env.example .env   # optional
+docker compose -f docker/docker-compose.yml up --build
+# App: http://localhost:8000  (Swagger at /docs)
 ```
 
-3. **Run with development script**:
-```bash
-./scripts/dev.sh
-```
+---
 
-4. **Test with mock data**:
+## Try it in 30 seconds (mock data)
+
 ```bash
+# Health
 curl http://localhost:8000/api/v1/healthz
-curl "http://localhost:8000/api/v1/trending?provider=mock&count=5"
+
+# Trending (mock provider)
+curl "http://localhost:8000/api/v1/trending?provider=mock&region=US&count=5"
+
+# Hashtag (mock provider)
 curl "http://localhost:8000/api/v1/hashtag/trending?provider=mock&count=3"
 ```
 
-5. **View API documentation**:
-   - Swagger UI: http://localhost:8000/docs
-   - ReDoc: http://localhost:8000/redoc
+---
 
-### Option 2: Manual Setup
+## Providers
 
-```bash
-# Install dependencies
-pip install -e .
+This repo includes **safe** providers only:
 
-# Run server directly
-uvicorn social_trends_harvester.app:app --host 0.0.0.0 --port 8000 --reload
+* **`mock`** — reads sanitized JSON fixtures (great for demos & tests)
+* **`har`** — parses your **own** browser HAR exports (when you have permission)
+
+> Want to add another source? Implement `TrendsProvider` and register it — just **don’t** submit bypass code. See **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
+
+---
+
+## API (v1)
+
+* `GET /api/v1/healthz` – service health
+* `GET /api/v1/providers` – available providers
+* `GET /api/v1/trending?provider=mock&region=US&count=30`
+* `GET /api/v1/hashtag/{tag}?provider=mock&region=US&count=30`
+* `GET /api/v1/cache/stats` • `DELETE /api/v1/cache/clear` *(if enabled)*
+
+### Example item (abridged)
+
+```json
+{
+  "id": "content_123",
+  "description": "Content description",
+  "author": "username",
+  "created_at": 1699920000,
+  "stats": { "view_count": 1234567, "like_count": 54321, "comment_count": 987, "share_count": 321 },
+  "hashtags": ["trending", "viral"],
+  "media_type": "video",
+  "duration": 30,
+  "platform": "sample_platform",
+  "thumbnail_url": null
+}
 ```
 
-### Option 2: HAR Provider (User-Provided Data)
-
-1. **Create HAR data directory**:
-```bash
-mkdir har_data
-```
-
-2. **Add your HAR files**:
-   - Export HAR files from your browser's network tab
-   - Place them in the `har_data/` directory
-   - Ensure you have permission to use this data
-
-3. **Test with HAR data**:
-```bash
-curl "http://localhost:8000/trending?provider=har&count=5"
-```
-
-### Option 3: Docker Compose
-
-1. **Setup environment**:
-```bash
-cp env.example .env
-# Edit .env as needed (optional Redis configuration)
-```
-
-2. **Start services**:
-```bash
-docker compose -f docker/docker-compose.yml up -d
-```
-
-3. **Test the API**:
-```bash
-curl http://localhost:8000/api/v1/healthz
-curl "http://localhost:8000/api/v1/trending?provider=mock&count=5"
-```
-
-## Examples
-
-### cURL Examples
-Run pre-built examples:
-```bash
-./examples/curl/trending.sh
-```
-
-### n8n Workflow
-Import the workflow from `examples/n8n/workflow.json` into your n8n instance.
-
-### Postman Collection
-Import `examples/postman_collection.json` for interactive API testing.
+---
 
 ## Configuration
 
-Environment variables (optional - see `env.example`):
+Copy `env.example` → `.env`. Common settings:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `REDIS_URL` | Redis connection URL (optional) | None |
-| `CACHE_TTL_S` | Cache TTL in seconds | 300 |
+| Key                   | What it does                           | Default |
+| --------------------- | -------------------------------------- | ------- |
+| `REDIS_URL`           | Optional Redis cache                   | —       |
+| `CACHE_TTL_S`         | Cache TTL (seconds)                    | `300`   |
+| `RATE_LIMIT_REQUESTS` | Simple per-minute limit                | `10`    |
+| `LOG_LEVEL`           | `DEBUG` | `INFO` | `WARNING` | `ERROR` | `INFO`  |
 
-## Error Handling
+---
 
-The API returns appropriate HTTP status codes:
-- `400`: Bad request (invalid parameters)
-- `429`: Rate limit exceeded
-- `504`: Request timeout
-- `500`: Internal server error
+## Examples
+
+* **cURL:** `./examples/curl/trending.sh`
+* **Postman:** `./examples/postman_collection.json`
+* **n8n:** `./examples/n8n/workflow.json`
+
+---
 
 ## Development
 
-### Running Tests
 ```bash
-pytest tests/ -v
+# run dev server
+./scripts/dev.sh
+
+# tests / lint
+./scripts/test.sh
+./scripts/lint.sh
+
+# or directly
+pytest -q
 ```
 
-### Code Formatting
-```bash
-black app/ tests/
-isort app/ tests/
-flake8 app/ tests/
+Project layout (short):
+
+```
+src/social_trends_harvester/   # app, api/v1, core, providers, schemas
+tests/                          # unit, integration, fixtures
+docs/                           # api.md (+ your future docs)
+examples/                       # curl, Postman, n8n
 ```
 
-### Building Docker Image
-```bash
-docker build -t tiktok-trends-api .
-```
+---
 
-## Production Deployment
+## Roadmap
 
-### Docker Compose Production
-```bash
-docker-compose -f docker-compose.yml up -d
-```
+* [ ] Provider registry with entry points
+* [ ] Optional Redis cache image in docker-compose
+* [ ] Sample dashboard (Streamlit) for quick viz
+* [ ] More fixtures & contract tests
 
-### Health Checks
-The service includes health check endpoints for monitoring:
-- Liveness: `GET /healthz`
-- Readiness: `GET /healthz`
+If you want these, **star** the repo and open an issue — it helps prioritize work!
 
-### Monitoring
-- Logs are structured and include request IDs
-- Cache statistics available at `/cache/stats`
-- Rate limiting metrics in health check response
+---
 
-## Troubleshooting
+## Contributing & License
 
-### Common Issues
+* PRs welcome (please read **[CONTRIBUTING.md](./CONTRIBUTING.md)**).
+* By contributing you agree to the **MIT** license and our **Code of Conduct**.
 
-1. **Browser/Playwright Issues**:
-   - Ensure Docker has sufficient memory (>2GB)
-   - Check Chromium installation: `playwright install chromium`
+---
 
-2. **TikTok API Errors**:
-   - Verify `TIKTOK_VERIFY_FP` if provided
-   - Check proxy configuration if using
-   - Monitor rate limits
-
-3. **Cache Issues**:
-   - Verify Redis connection
-   - Check Redis memory usage
-   - Clear cache if needed: `DELETE /cache/clear`
-
-### Logs
-```bash
-# View service logs
-docker-compose logs tiktok-trends-api
-
-# Follow logs
-docker-compose logs -f tiktok-trends-api
-```
-
-## Security
-
-- Non-root user in Docker container
-- Rate limiting to prevent abuse
-- Input validation and sanitization
-- Proxy support for network isolation
-- No sensitive data in logs
-
-## License
-
-MIT License - see LICENSE file for details.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review logs for error details
-3. Open an issue with reproduction steps
+**If this saved you time, a ⭐ means a lot.**
