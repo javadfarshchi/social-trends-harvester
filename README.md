@@ -2,7 +2,7 @@
 
 ![CI](https://img.shields.io/badge/CI-passing-brightgreen?style=flat) ![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)
 
-**A site-agnostic FastAPI service** that turns messy “trending content” data into a clean, normalized API. Built with caching, simple rate limiting, and a plug-in provider interface — shipping only **safe** example providers (mock + HAR).
+**A site-agnostic FastAPI service** that turns messy “trending content” data into a clean, normalized API. Built with caching, simple rate limiting, and a plug-in provider interface, shipping only **safe** example providers (mock + HAR).
 
 > If this is useful, please ⭐ the repo — it helps others find it!
 
@@ -17,7 +17,7 @@
 
 ---
 
-## ⚖️ Legal & Acceptable Use (short)
+## ⚖️ Legal & Acceptable Use
 
 This is general-purpose tooling. **You are responsible** for how you use it. Many platforms restrict automated access in their Terms. This project ships **no** anti-bot, CAPTCHA, or access-control bypass.
 See **[LEGAL_CONSIDERATIONS.md](./LEGAL_CONSIDERATIONS.md)** for details.
