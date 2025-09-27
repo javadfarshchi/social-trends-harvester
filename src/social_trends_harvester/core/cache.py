@@ -3,7 +3,7 @@
 import hashlib
 import json
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .config import settings
 
@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 try:
     import redis.asyncio as redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     redis = None
@@ -23,7 +24,7 @@ class CacheManager:
     def __init__(self):
         """Initialize cache manager."""
         self.redis_client: Optional[redis.Redis] = None
-        self.memory_cache: Dict[str, Any] = {}
+        self.memory_cache: dict[str, Any] = {}
         self.enabled = False
 
     async def initialize(self):
@@ -35,9 +36,7 @@ class CacheManager:
 
         try:
             self.redis_client = redis.from_url(
-                settings.REDIS_URL,
-                encoding="utf-8",
-                decode_responses=True
+                settings.REDIS_URL, encoding="utf-8", decode_responses=True
             )
             # Test connection
             await self.redis_client.ping()
@@ -54,14 +53,14 @@ class CacheManager:
             await self.redis_client.close()
             logger.info("Redis connection closed")
 
-    def _generate_key(self, namespace: str, params: Dict[str, Any]) -> str:
+    def _generate_key(self, namespace: str, params: dict[str, Any]) -> str:
         """Generate cache key from namespace and parameters."""
         # Sort params for consistent keys
         sorted_params = json.dumps(params, sort_keys=True)
         key_hash = hashlib.md5(sorted_params.encode()).hexdigest()[:8]
         return f"sth:{namespace}:{key_hash}"
 
-    async def get(self, namespace: str, params: Dict[str, Any]) -> Optional[Any]:
+    async def get(self, namespace: str, params: dict[str, Any]) -> Optional[Any]:
         """Get cached value."""
         if not self.enabled:
             return None
@@ -82,7 +81,7 @@ class CacheManager:
 
         return None
 
-    async def set(self, namespace: str, params: Dict[str, Any], value: Any) -> bool:
+    async def set(self, namespace: str, params: dict[str, Any], value: Any) -> bool:
         """Set cached value."""
         if not self.enabled:
             return False
@@ -93,11 +92,7 @@ class CacheManager:
             serialized_value = json.dumps(value)
 
             if self.redis_client:
-                await self.redis_client.setex(
-                    key,
-                    settings.CACHE_TTL_S,
-                    serialized_value
-                )
+                await self.redis_client.setex(key, settings.CACHE_TTL_S, serialized_value)
             else:
                 # Memory cache (no TTL for simplicity)
                 self.memory_cache[key] = value
@@ -107,7 +102,7 @@ class CacheManager:
             logger.warning(f"Cache set error for {key}: {e}")
             return False
 
-    async def delete(self, namespace: str, params: Dict[str, Any]) -> bool:
+    async def delete(self, namespace: str, params: dict[str, Any]) -> bool:
         """Delete cached value."""
         if not self.enabled:
             return False
@@ -147,27 +142,27 @@ class CacheManager:
             logger.error(f"Cache clear error: {e}")
             return False
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         stats = {
             "enabled": self.enabled,
             "backend": "redis" if self.redis_client else "memory",
-            "ttl_seconds": settings.CACHE_TTL_S
+            "ttl_seconds": settings.CACHE_TTL_S,
         }
 
         try:
             if self.redis_client:
                 info = await self.redis_client.info()
-                stats.update({
-                    "connected_clients": info.get("connected_clients", 0),
-                    "used_memory": info.get("used_memory_human", "unknown"),
-                    "keyspace_hits": info.get("keyspace_hits", 0),
-                    "keyspace_misses": info.get("keyspace_misses", 0)
-                })
+                stats.update(
+                    {
+                        "connected_clients": info.get("connected_clients", 0),
+                        "used_memory": info.get("used_memory_human", "unknown"),
+                        "keyspace_hits": info.get("keyspace_hits", 0),
+                        "keyspace_misses": info.get("keyspace_misses", 0),
+                    }
+                )
             else:
-                stats.update({
-                    "memory_keys": len(self.memory_cache)
-                })
+                stats.update({"memory_keys": len(self.memory_cache)})
         except Exception as e:
             logger.warning(f"Error getting cache stats: {e}")
 

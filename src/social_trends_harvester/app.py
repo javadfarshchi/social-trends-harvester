@@ -111,7 +111,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         docs_url="/docs",
         redoc_url="/redoc",
-        openapi_url="/openapi.json"
+        openapi_url="/openapi.json",
     )
 
     # Add middleware
@@ -123,10 +123,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=["*"]
-    )
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
     # Include routers
     app.include_router(routes_health.router, prefix="/api/v1", tags=["health"])
@@ -147,13 +144,9 @@ def create_app() -> FastAPI:
                 "trending": "/api/v1/trending?provider=mock&region=US&count=30",
                 "hashtag": "/api/v1/hashtag/{tag}?provider=mock&region=US&count=30",
                 "providers": "/api/v1/providers",
-                "compliance": "/api/v1/compliance"
+                "compliance": "/api/v1/compliance",
             },
-            "documentation": {
-                "swagger": "/docs",
-                "redoc": "/redoc",
-                "openapi": "/openapi.json"
-            }
+            "documentation": {"swagger": "/docs", "redoc": "/redoc", "openapi": "/openapi.json"},
         }
 
     return app
@@ -165,10 +158,11 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "social_trends_harvester.app:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_level=settings.LOG_LEVEL.lower()
+        log_level=settings.LOG_LEVEL.lower(),
     )

@@ -3,7 +3,6 @@
 import asyncio
 import logging
 import time
-from typing import Dict
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
@@ -17,16 +16,17 @@ class ComplianceManager:
 
     def __init__(self):
         """Initialize compliance manager."""
-        self.robots_cache: Dict[str, RobotFileParser] = {}
-        self.rate_limiters: Dict[str, RateLimiter] = {}
-        self.user_agent = "SocialTrendsHarvester/1.0 (+https://github.com/javadfarshchi/social-trends-harvester)"
+        self.robots_cache: dict[str, RobotFileParser] = {}
+        self.rate_limiters: dict[str, RateLimiter] = {}
+        self.user_agent = (
+            "SocialTrendsHarvester/1.0 (+https://github.com/javadfarshchi/social-trends-harvester)"
+        )
         self._request_session = None
 
     async def initialize(self):
         """Initialize the compliance manager."""
         self._request_session = httpx.AsyncClient(
-            headers={"User-Agent": self.user_agent},
-            timeout=httpx.Timeout(10.0)
+            headers={"User-Agent": self.user_agent}, timeout=httpx.Timeout(10.0)
         )
         logger.info("Compliance manager initialized")
 
@@ -39,11 +39,11 @@ class ComplianceManager:
     async def check_robots_permission(self, url: str, user_agent: str = "*") -> bool:
         """
         Check if the URL is allowed by robots.txt.
-        
+
         Args:
             url: URL to check
             user_agent: User agent to check for (defaults to *)
-            
+
         Returns:
             True if allowed, False if disallowed
         """
@@ -103,14 +103,14 @@ class ComplianceManager:
             # Store None to indicate failure
             self.robots_cache[domain] = None
 
-    def get_rate_limiter(self, domain: str, requests_per_minute: int = 10) -> 'RateLimiter':
+    def get_rate_limiter(self, domain: str, requests_per_minute: int = 10) -> "RateLimiter":
         """
         Get or create a rate limiter for a domain.
-        
+
         Args:
             domain: Domain to rate limit
             requests_per_minute: Maximum requests per minute
-            
+
         Returns:
             RateLimiter instance
         """
@@ -122,10 +122,10 @@ class ComplianceManager:
     async def respect_crawl_delay(self, domain: str) -> bool:
         """
         Check and respect crawl-delay from robots.txt.
-        
+
         Args:
             domain: Domain to check
-            
+
         Returns:
             True if delay was respected, False if robots.txt unavailable
         """
@@ -159,7 +159,7 @@ class RateLimiter:
     def __init__(self, requests_per_minute: int = 10):
         """
         Initialize rate limiter.
-        
+
         Args:
             requests_per_minute: Maximum requests per minute
         """
@@ -192,10 +192,12 @@ class RateLimiter:
         self.consecutive_failures += 1
 
         # Exponential backoff: 2^failures seconds, max 300 seconds (5 minutes)
-        backoff_seconds = min(2 ** self.consecutive_failures, 300)
+        backoff_seconds = min(2**self.consecutive_failures, 300)
         self.backoff_until = time.time() + backoff_seconds
 
-        logger.warning(f"Rate limiter applying backoff of {backoff_seconds}s after {self.consecutive_failures} failures")
+        logger.warning(
+            f"Rate limiter applying backoff of {backoff_seconds}s after {self.consecutive_failures} failures"
+        )
 
     def time_until_reset(self) -> float:
         """Get time until rate limit resets."""
@@ -217,13 +219,13 @@ class EthicalHeaders:
     """Generate ethical HTTP headers for requests."""
 
     @staticmethod
-    def get_headers(respect_robots: bool = True) -> Dict[str, str]:
+    def get_headers(respect_robots: bool = True) -> dict[str, str]:
         """
         Get ethical HTTP headers.
-        
+
         Args:
             respect_robots: Whether this client respects robots.txt
-            
+
         Returns:
             Dictionary of HTTP headers
         """
@@ -234,7 +236,7 @@ class EthicalHeaders:
             "Accept-Encoding": "gzip, deflate",
             "DNT": "1",  # Do Not Track
             "Connection": "keep-alive",
-            "Upgrade-Insecure-Requests": "1"
+            "Upgrade-Insecure-Requests": "1",
         }
 
         if respect_robots:
@@ -250,10 +252,10 @@ compliance_manager = ComplianceManager()
 async def check_url_compliance(url: str) -> bool:
     """
     Check if accessing a URL is compliant.
-    
+
     Args:
         url: URL to check
-        
+
     Returns:
         True if compliant, False otherwise
     """
@@ -289,7 +291,7 @@ async def check_url_compliance(url: str) -> bool:
 async def record_request_metrics(url: str, success: bool = True):
     """
     Record request metrics for compliance tracking.
-    
+
     Args:
         url: URL that was accessed
         success: Whether the request was successful

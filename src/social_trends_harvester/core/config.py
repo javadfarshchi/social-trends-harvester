@@ -40,7 +40,9 @@ class Settings:
 
     # Compliance
     RESPECT_ROBOTS_TXT: bool = True
-    ETHICAL_USER_AGENT: str = "SocialTrendsHarvester/1.0 (+https://github.com/javadfarshchi/social-trends-harvester)"
+    ETHICAL_USER_AGENT: str = (
+        "SocialTrendsHarvester/1.0 (+https://github.com/javadfarshchi/social-trends-harvester)"
+    )
 
 
 # Global settings instance

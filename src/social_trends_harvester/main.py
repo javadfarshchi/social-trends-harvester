@@ -3,7 +3,7 @@
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from fastapi import FastAPI, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +26,7 @@ from .providers.mock import MockProvider
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class TrendsService:
 
     def __init__(self):
         """Initialize trends service."""
-        self.providers: Dict[str, TrendsProvider] = {}
+        self.providers: dict[str, TrendsProvider] = {}
         self.default_provider = "mock"
 
     async def initialize(self):
@@ -83,7 +82,9 @@ class TrendsService:
 
         if provider_name not in self.providers:
             available = ", ".join(self.providers.keys())
-            raise ValidationError(f"Provider '{provider_name}' not available. Available: {available}")
+            raise ValidationError(
+                f"Provider '{provider_name}' not available. Available: {available}"
+            )
 
         return self.providers[provider_name]
 
@@ -121,7 +122,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Add middleware
@@ -133,10 +134,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["*"]
-)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 
 # Ensure service initialized lazily for test environments where lifespan may not run
@@ -160,8 +158,8 @@ async def validation_error_handler(request, exc):
             error=str(exc),
             error_code="VALIDATION_ERROR",
             http_status=400,
-            timestamp=int(datetime.now().timestamp())
-        ).dict()
+            timestamp=int(datetime.now().timestamp()),
+        ).dict(),
     )
 
 
@@ -174,8 +172,8 @@ async def rate_limit_handler(request, exc):
             error=str(exc),
             error_code="RATE_LIMIT_EXCEEDED",
             http_status=429,
-            timestamp=int(datetime.now().timestamp())
-        ).dict()
+            timestamp=int(datetime.now().timestamp()),
+        ).dict(),
     )
 
 
@@ -188,8 +186,8 @@ async def provider_error_handler(request, exc):
             error=str(exc),
             error_code="PROVIDER_ERROR",
             http_status=500,
-            timestamp=int(datetime.now().timestamp())
-        ).dict()
+            timestamp=int(datetime.now().timestamp()),
+        ).dict(),
     )
 
 
@@ -203,13 +201,13 @@ async def general_exception_handler(request, exc):
             error="Internal server error",
             error_code="INTERNAL_ERROR",
             http_status=500,
-            timestamp=int(datetime.now().timestamp())
-        ).dict()
+            timestamp=int(datetime.now().timestamp()),
+        ).dict(),
     )
 
 
 # API Routes
-@app.get("/", response_model=Dict[str, Any])
+@app.get("/", response_model=dict[str, Any])
 async def root():
     """Root endpoint with API information."""
     await ensure_initialized()
@@ -223,12 +221,9 @@ async def root():
             "trending": "/trending?provider=mock&region=US&count=30",
             "hashtag": "/hashtag/{tag}?provider=mock&region=US&count=30",
             "providers": "/providers",
-            "compliance": "/compliance"
+            "compliance": "/compliance",
         },
-        "documentation": {
-            "swagger": "/docs",
-            "redoc": "/redoc"
-        }
+        "documentation": {"swagger": "/docs", "redoc": "/redoc"},
     }
 
 
@@ -254,22 +249,21 @@ async def health_check():
         return HealthResponse(
             status=overall_status,
             providers=provider_health,
-            compliance_status={"manager_initialized": compliance_manager._request_session is not None}
+            compliance_status={
+                "manager_initialized": compliance_manager._request_session is not None
+            },
         )
 
     except Exception as e:
         logger.error(f"Health check failed: {e}")
-        return HealthResponse(
-            status="error",
-            providers={}
-        )
+        return HealthResponse(status="error", providers={})
 
 
 @app.get("/trending", response_model=TrendingResponse)
 async def get_trending(
     provider: Optional[str] = Query(default=None, description="Data provider to use"),
     region: str = Query(default="US", description="Region code (ISO 3166-1 alpha-2)"),
-    count: int = Query(default=30, description="Number of items to return (1-60)")
+    count: int = Query(default=30, description="Number of items to return (1-60)"),
 ):
     """Get trending content."""
     try:
@@ -286,10 +280,7 @@ async def get_trending(
         items = [ContentItem(**item) for item in items_data]
 
         response = TrendingResponse(
-            items=items,
-            total=len(items),
-            region=region,
-            provider=trends_provider.provider_name
+            items=items, total=len(items), region=region, provider=trends_provider.provider_name
         )
 
         logger.info(f"Returning {len(items)} trending items from {trends_provider.provider_name}")
@@ -307,7 +298,7 @@ async def get_hashtag_content(
     tag: str = Path(..., description="Hashtag to search for (without # prefix)"),
     provider: Optional[str] = Query(default=None, description="Data provider to use"),
     region: str = Query(default="US", description="Region code (ISO 3166-1 alpha-2)"),
-    count: int = Query(default=30, description="Number of items to return (1-60)")
+    count: int = Query(default=30, description="Number of items to return (1-60)"),
 ):
     """Get content for a specific hashtag."""
     try:
@@ -318,7 +309,9 @@ async def get_hashtag_content(
             raise ValidationError("Count must be between 1 and 60")
 
         trends_provider = trends_service.get_provider(provider)
-        items_data = await trends_provider.fetch_hashtag_content(hashtag=tag, count=count, region=region)
+        items_data = await trends_provider.fetch_hashtag_content(
+            hashtag=tag, count=count, region=region
+        )
 
         # Convert to ContentItem objects
         items = [ContentItem(**item) for item in items_data]
@@ -328,10 +321,12 @@ async def get_hashtag_content(
             total=len(items),
             hashtag=tag,
             region=region,
-            provider=trends_provider.provider_name
+            provider=trends_provider.provider_name,
         )
 
-        logger.info(f"Returning {len(items)} items for hashtag #{tag} from {trends_provider.provider_name}")
+        logger.info(
+            f"Returning {len(items)} items for hashtag #{tag} from {trends_provider.provider_name}"
+        )
         return response
 
     except (ValidationError, RateLimitError, ProviderError):
@@ -341,7 +336,7 @@ async def get_hashtag_content(
         raise ProviderError(f"Failed to fetch hashtag content: {str(e)}")
 
 
-@app.get("/providers", response_model=List[ProviderInfo])
+@app.get("/providers", response_model=list[ProviderInfo])
 async def get_providers():
     """Get information about available providers."""
     await ensure_initialized()
@@ -353,7 +348,7 @@ async def get_providers():
                 name=provider.provider_name,
                 supported_regions=provider.supported_regions,
                 supported_features=["trending", "hashtag"],
-                compliance_level="strict"
+                compliance_level="strict",
             )
             providers_info.append(info)
         except Exception as e:
@@ -371,7 +366,7 @@ async def get_compliance_info():
         rate_limiting_enabled=True,
         user_agent=compliance_manager.user_agent,
         supported_protocols=["https"],
-        data_retention_policy="No data retention - requests processed in real-time"
+        data_retention_policy="No data retention - requests processed in real-time",
     )
 
 
@@ -379,27 +374,16 @@ async def get_compliance_info():
 @app.get("/cache/stats")
 async def get_cache_stats():
     """Get cache statistics (if caching is implemented)."""
-    return {
-        "message": "Cache statistics not implemented in this version",
-        "status": "disabled"
-    }
+    return {"message": "Cache statistics not implemented in this version", "status": "disabled"}
 
 
 @app.delete("/cache/clear")
 async def clear_cache():
     """Clear cache (if caching is implemented)."""
-    return {
-        "message": "Cache clearing not implemented in this version",
-        "status": "disabled"
-    }
+    return {"message": "Cache clearing not implemented in this version", "status": "disabled"}
 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "src.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

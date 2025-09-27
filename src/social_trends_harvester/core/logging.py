@@ -17,7 +17,7 @@ def setup_logging(log_level: Optional[str] = None) -> None:
         level=getattr(logging, level.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        stream=sys.stdout
+        stream=sys.stdout,
     )
 
     # Set specific logger levels

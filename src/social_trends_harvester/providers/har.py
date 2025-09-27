@@ -5,35 +5,82 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
-from .base import ProviderError, ValidationError
+from .base import ProviderError, TrendsProvider, ValidationError
 
 logger = logging.getLogger(__name__)
 
 
 class HARProvider(TrendsProvider):
-    {{ ... }}
+    """Provider for HAR (HTTP Archive) file data."""
+
+    def __init__(self, har_data_path: str = "data/har", har_directory: Optional[str] = None):
+        """Initialize HAR provider."""
+        # Support both parameter names for backward compatibility
+        path = har_directory if har_directory is not None else har_data_path
+        self.har_data_path = Path(path)
+        self._initialized = False
+        self._parsed_data: dict[str, Any] = {"trending": {}, "hashtags": {}, "regions": {}}
+
+    async def initialize(self) -> bool:
+        """Initialize the HAR provider by parsing HAR files."""
+        try:
+            if not self.har_data_path.exists():
+                logger.warning(f"HAR data path does not exist: {self.har_data_path}")
+                return False
+
+            har_files = list(self.har_data_path.glob("*.har"))
+            if not har_files:
+                logger.warning(f"No HAR files found in {self.har_data_path}")
+                return False
+
+            for har_file in har_files:
+                await self._parse_har_file(har_file)
+
+            self._initialized = True
+            logger.info(f"HAR provider initialized with {len(har_files)} files")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to initialize HAR provider: {e}")
+            return False
 
     async def fetch_trending(
         self,
         count: int = 30,
         region: str = "US",
         **kwargs,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Fetch trending content from HAR data."""
         if not self._initialized:
             if not await self.initialize():
                 raise ProviderError("Failed to initialize HAR provider")
 
-    {{ ... }}
+        # Validate parameters
+        if count < 1 or count > 60:
+            raise ValidationError("Count must be between 1 and 60")
+
+        # Get trending data for region
+        region_data = self._parsed_data["trending"].get(region, [])
+
+        if not region_data:
+            logger.warning(f"No trending data available for region {region} in HAR files")
+            return []
+
+        # Return requested count
+        result = region_data[:count] if len(region_data) >= count else region_data
+
+        logger.info(f"HAR provider returned {len(result)} trending items for region {region}")
+        return result
+
     async def fetch_hashtag_content(
         self,
         hashtag: str,
         count: int = 30,
         region: str = "US",
         **kwargs,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Fetch hashtag content from HAR data."""
         if not self._initialized:
             if not await self.initialize():
@@ -46,7 +93,7 @@ class HARProvider(TrendsProvider):
             raise ValidationError("Hashtag cannot be empty")
 
         # Clean hashtag
-        clean_hashtag = hashtag.strip().lower().lstrip('#')
+        clean_hashtag = hashtag.strip().lower().lstrip("#")
 
         # Get hashtag data
         hashtag_data = self._parsed_data["hashtags"].get(clean_hashtag, [])
@@ -65,10 +112,20 @@ class HARProvider(TrendsProvider):
         """Check if the provider is healthy."""
         return self._initialized or await self.initialize()
 
+    @property
+    def provider_name(self) -> str:
+        """Get the provider name."""
+        return "har"
+
+    @property
+    def supported_regions(self) -> list[str]:
+        """Get list of supported region codes."""
+        return list(self._parsed_data["regions"].keys()) if self._initialized else ["US"]
+
     async def _parse_har_file(self, har_file: Path):
         """Parse a single HAR file and extract social media data."""
         try:
-            with open(har_file, encoding='utf-8') as f:
+            with open(har_file, encoding="utf-8") as f:
                 har_data = json.load(f)
 
             entries = har_data.get("log", {}).get("entries", [])
@@ -153,18 +210,32 @@ class HARProvider(TrendsProvider):
             normalized = {
                 "id": str(item.get("id", item.get("videoId", item.get("postId", "unknown")))),
                 "desc": item.get("desc", item.get("description", item.get("caption", ""))),
-                "author": item.get("author", item.get("username", item.get("user", {}).get("username", ""))),
-                "create_time": self._parse_timestamp(item.get("create_time", item.get("createdAt", item.get("timestamp", 0)))),
+                "author": item.get(
+                    "author", item.get("username", item.get("user", {}).get("username", ""))
+                ),
+                "create_time": self._parse_timestamp(
+                    item.get("create_time", item.get("createdAt", item.get("timestamp", 0)))
+                ),
                 "stats": {
-                    "playCount": int(item.get("stats", {}).get("playCount", item.get("viewCount", 0))),
-                    "diggCount": int(item.get("stats", {}).get("diggCount", item.get("likeCount", 0))),
-                    "commentCount": int(item.get("stats", {}).get("commentCount", item.get("commentCount", 0))),
-                    "shareCount": int(item.get("stats", {}).get("shareCount", item.get("shareCount", 0)))
+                    "playCount": int(
+                        item.get("stats", {}).get("playCount", item.get("viewCount", 0))
+                    ),
+                    "diggCount": int(
+                        item.get("stats", {}).get("diggCount", item.get("likeCount", 0))
+                    ),
+                    "commentCount": int(
+                        item.get("stats", {}).get("commentCount", item.get("commentCount", 0))
+                    ),
+                    "shareCount": int(
+                        item.get("stats", {}).get("shareCount", item.get("shareCount", 0))
+                    ),
                 },
-                "music_title": item.get("music", {}).get("title", item.get("audio", {}).get("title", "")),
+                "music_title": item.get("music", {}).get(
+                    "title", item.get("audio", {}).get("title", "")
+                ),
                 "hashtags": self._extract_hashtags(item),
                 "video_url": None,  # Exclude media URLs for compliance
-                "cover": None
+                "cover": None,
             }
 
             return normalized
@@ -184,7 +255,7 @@ class HARProvider(TrendsProvider):
         if isinstance(timestamp, str):
             try:
                 # Try parsing ISO format
-                dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
                 return int(dt.timestamp())
             except Exception:
                 pass
@@ -197,12 +268,14 @@ class HARProvider(TrendsProvider):
 
         # Direct hashtags field
         if "hashtags" in item and isinstance(item["hashtags"], list):
-            hashtags.extend([tag.strip('#').lower() for tag in item["hashtags"] if isinstance(tag, str)])
+            hashtags.extend(
+                [tag.strip("#").lower() for tag in item["hashtags"] if isinstance(tag, str)]
+            )
 
         # Extract from description
         desc = item.get("desc", item.get("description", item.get("caption", "")))
         if isinstance(desc, str):
-            found_tags = re.findall(r'#(\w+)', desc)
+            found_tags = re.findall(r"#(\w+)", desc)
             hashtags.extend([tag.lower() for tag in found_tags])
 
         return list(set(hashtags))  # Remove duplicates
@@ -210,11 +283,7 @@ class HARProvider(TrendsProvider):
     def _extract_region_from_url(self, url: str) -> str:
         """Extract region code from URL parameters."""
         # Look for common region parameters
-        region_patterns = [
-            r'region=([A-Z]{2})',
-            r'country=([A-Z]{2})',
-            r'locale=([A-Z]{2})'
-        ]
+        region_patterns = [r"region=([A-Z]{2})", r"country=([A-Z]{2})", r"locale=([A-Z]{2})"]
 
         for pattern in region_patterns:
             match = re.search(pattern, url, re.IGNORECASE)
@@ -227,15 +296,15 @@ class HARProvider(TrendsProvider):
         """Extract hashtag from URL path or parameters."""
         # Look for hashtag in URL path or parameters
         hashtag_patterns = [
-            r'/hashtag/([^/\?&]+)',
-            r'/tag/([^/\?&]+)',
-            r'[?&]tag=([^&]+)',
-            r'[?&]hashtag=([^&]+)'
+            r"/hashtag/([^/\?&]+)",
+            r"/tag/([^/\?&]+)",
+            r"[?&]tag=([^&]+)",
+            r"[?&]hashtag=([^&]+)",
         ]
 
         for pattern in hashtag_patterns:
             match = re.search(pattern, url, re.IGNORECASE)
             if match:
-                return match.group(1).lower().lstrip('#')
+                return match.group(1).lower().lstrip("#")
 
         return None

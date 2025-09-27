@@ -9,22 +9,19 @@ class TrendsProvider(ABC):
 
     @abstractmethod
     async def fetch_trending(
-        self,
-        count: int = 30,
-        region: str = "US",
-        **kwargs
+        self, count: int = 30, region: str = "US", **kwargs
     ) -> list[dict[str, Any]]:
         """
         Fetch trending content items.
-        
+
         Args:
             count: Number of items to fetch (1-60)
             region: Region code (ISO 3166-1 alpha-2)
             **kwargs: Provider-specific parameters
-            
+
         Returns:
             List of normalized content items
-            
+
         Raises:
             ProviderError: When fetch operation fails
             ValidationError: When parameters are invalid
@@ -33,24 +30,20 @@ class TrendsProvider(ABC):
 
     @abstractmethod
     async def fetch_hashtag_content(
-        self,
-        hashtag: str,
-        count: int = 30,
-        region: str = "US",
-        **kwargs
+        self, hashtag: str, count: int = 30, region: str = "US", **kwargs
     ) -> list[dict[str, Any]]:
         """
         Fetch content for a specific hashtag.
-        
+
         Args:
             hashtag: Hashtag to search (without # prefix)
             count: Number of items to fetch (1-60)
             region: Region code (ISO 3166-1 alpha-2)
             **kwargs: Provider-specific parameters
-            
+
         Returns:
             List of normalized content items
-            
+
         Raises:
             ProviderError: When fetch operation fails
             ValidationError: When parameters are invalid
@@ -61,7 +54,7 @@ class TrendsProvider(ABC):
     async def health_check(self) -> bool:
         """
         Check if the provider is healthy and operational.
-        
+
         Returns:
             True if healthy, False otherwise
         """
@@ -97,19 +90,23 @@ class TrendsProvider(ABC):
 
 class ProviderError(Exception):
     """Base exception for provider errors."""
+
     pass
 
 
 class ValidationError(ProviderError):
     """Exception raised when input validation fails."""
+
     pass
 
 
 class RateLimitError(ProviderError):
     """Exception raised when rate limit is exceeded."""
+
     pass
 
 
 class TimeoutError(ProviderError):
     """Exception raised when request times out."""
+
     pass

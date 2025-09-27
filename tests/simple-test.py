@@ -11,11 +11,11 @@ import requests
 def run_cmd(cmd, timeout=30):
     """Run command with timeout."""
     try:
-        result = subprocess.run(cmd, shell=True, timeout=timeout,
-                              capture_output=True, text=True)
+        result = subprocess.run(cmd, shell=True, timeout=timeout, capture_output=True, text=True)
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return False, "", "Command timed out"
+
 
 def test_docker_container():
     """Test Docker container APIs."""
@@ -36,7 +36,9 @@ def test_docker_container():
 
     # Run container
     print("🚀 Starting container...")
-    success, stdout, stderr = run_cmd("docker run -d --name sth-test-container -p 8005:8000 sth-test", 30)
+    success, stdout, stderr = run_cmd(
+        "docker run -d --name sth-test-container -p 8005:8000 sth-test", 30
+    )
     if not success:
         print(f"❌ Container start failed: {stderr}")
         return False
@@ -123,6 +125,7 @@ def test_docker_container():
         else:
             print(err or "<no logs available>")
         return False
+
 
 if __name__ == "__main__":
     try:

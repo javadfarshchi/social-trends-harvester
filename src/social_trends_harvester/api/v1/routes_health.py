@@ -1,7 +1,6 @@
 """Health check routes."""
 
 import logging
-from typing import List
 
 from fastapi import APIRouter, Depends
 
@@ -14,7 +13,7 @@ router = APIRouter()
 
 
 @router.get("/healthz", response_model=HealthResponse)
-async def health_check(service = Depends(get_trends_service)):
+async def health_check(service=Depends(get_trends_service)):
     """Health check endpoint."""
     try:
         provider_health = {}
@@ -34,19 +33,18 @@ async def health_check(service = Depends(get_trends_service)):
         return HealthResponse(
             status=overall_status,
             providers=provider_health,
-            compliance_status={"manager_initialized": compliance_manager._request_session is not None}
+            compliance_status={
+                "manager_initialized": compliance_manager._request_session is not None
+            },
         )
 
     except Exception as e:
         logger.error(f"Health check failed: {e}")
-        return HealthResponse(
-            status="error",
-            providers={}
-        )
+        return HealthResponse(status="error", providers={})
 
 
-@router.get("/providers", response_model=List[ProviderInfo])
-async def get_providers(service = Depends(get_trends_service)):
+@router.get("/providers", response_model=list[ProviderInfo])
+async def get_providers(service=Depends(get_trends_service)):
     """Get information about available providers."""
     providers_info = []
 
@@ -56,7 +54,7 @@ async def get_providers(service = Depends(get_trends_service)):
                 name=provider.provider_name,
                 supported_regions=provider.supported_regions,
                 supported_features=["trending", "hashtag"],
-                compliance_level="strict"
+                compliance_level="strict",
             )
             providers_info.append(info)
         except Exception as e:
@@ -73,5 +71,5 @@ async def get_compliance_info():
         rate_limiting_enabled=True,
         user_agent=compliance_manager.user_agent,
         supported_protocols=["https"],
-        data_retention_policy="No data retention - requests processed in real-time"
+        data_retention_policy="No data retention - requests processed in real-time",
     )

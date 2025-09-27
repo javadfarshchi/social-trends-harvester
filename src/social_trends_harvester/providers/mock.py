@@ -17,13 +17,13 @@ class MockProvider(TrendsProvider):
     def __init__(self, fixtures_path: Optional[str] = None):
         """
         Initialize mock provider.
-        
+
         Args:
             fixtures_path: Path to fixtures directory
         """
         self.fixtures_path = Path(fixtures_path) if fixtures_path else Path("tests/fixtures")
-        self._trending_data = {}
-        self._hashtag_data = {}
+        self._trending_data: dict[str, list[dict[str, Any]]] = {}
+        self._hashtag_data: dict[str, list[dict[str, Any]]] = {}
         self._initialized = False
 
     @property
@@ -45,7 +45,7 @@ class MockProvider(TrendsProvider):
             # Load trending fixtures
             trending_file = self.fixtures_path / "trending_sample.json"
             if trending_file.exists():
-                with open(trending_file, encoding='utf-8') as f:
+                with open(trending_file, encoding="utf-8") as f:
                     self._trending_data = json.load(f)
             else:
                 logger.warning(f"Trending fixture file not found: {trending_file}")
@@ -54,7 +54,7 @@ class MockProvider(TrendsProvider):
             # Load hashtag fixtures
             hashtag_file = self.fixtures_path / "hashtag_sample.json"
             if hashtag_file.exists():
-                with open(hashtag_file, encoding='utf-8') as f:
+                with open(hashtag_file, encoding="utf-8") as f:
                     self._hashtag_data = json.load(f)
             else:
                 logger.warning(f"Hashtag fixture file not found: {hashtag_file}")
@@ -67,6 +67,7 @@ class MockProvider(TrendsProvider):
         except Exception as e:
             logger.error(f"Failed to initialize mock provider: {e}")
             return False
+
     async def fetch_trending(
         self,
         count: int = 30,
@@ -115,13 +116,10 @@ class MockProvider(TrendsProvider):
             raise ValidationError("Hashtag cannot be empty")
 
         # Clean hashtag
-        clean_hashtag = hashtag.strip().lower().lstrip('#')
+        clean_hashtag = hashtag.strip().lower().lstrip("#")
 
         # Get hashtag data (fallback to generic data)
-        hashtag_data = self._hashtag_data.get(
-            clean_hashtag,
-            self._hashtag_data.get("generic", [])
-        )
+        hashtag_data = self._hashtag_data.get(clean_hashtag, self._hashtag_data.get("generic", []))
 
         # Return requested count
         result = hashtag_data[:count] if len(hashtag_data) >= count else hashtag_data
@@ -147,12 +145,12 @@ class MockProvider(TrendsProvider):
                     "playCount": 1000000 - (i * 10000),
                     "diggCount": 50000 - (i * 500),
                     "commentCount": 2000 - (i * 20),
-                    "shareCount": 1000 - (i * 10)
+                    "shareCount": 1000 - (i * 10),
                 },
                 "music_title": f"Popular Song {i % 5 + 1}",
                 "hashtags": ["trending", "popular", f"tag{i % 3 + 1}"],
                 "video_url": None,  # No media URLs in compliance mode
-                "cover": None
+                "cover": None,
             }
             sample_items.append(item)
 
@@ -160,7 +158,7 @@ class MockProvider(TrendsProvider):
             "US": sample_items,
             "GB": sample_items[:30],
             "CA": sample_items[:25],
-            "AU": sample_items[:20]
+            "AU": sample_items[:20],
         }
 
     def _generate_sample_hashtags(self) -> dict[str, list[dict[str, Any]]]:
@@ -178,12 +176,12 @@ class MockProvider(TrendsProvider):
                     "playCount": 500000 - (i * 5000),
                     "diggCount": 25000 - (i * 250),
                     "commentCount": 1000 - (i * 10),
-                    "shareCount": 500 - (i * 5)
+                    "shareCount": 500 - (i * 5),
                 },
                 "music_title": f"Trending Sound {i % 4 + 1}",
                 "hashtags": ["viral", "fyp", "example"],
                 "video_url": None,  # No media URLs in compliance mode
-                "cover": None
+                "cover": None,
             }
             sample_items.append(item)
 
@@ -191,5 +189,5 @@ class MockProvider(TrendsProvider):
             "trending": sample_items,
             "viral": sample_items[:20],
             "fyp": sample_items[:25],
-            "generic": sample_items[:15]
+            "generic": sample_items[:15],
         }

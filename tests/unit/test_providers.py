@@ -1,6 +1,5 @@
 """Tests for provider adapters."""
 
-
 import pytest
 import pytest_asyncio
 
@@ -81,9 +80,7 @@ class TestMockProvider:
     @pytest.mark.asyncio
     async def test_fetch_hashtag_success(self, mock_provider):
         """Test successful hashtag fetch."""
-        result = await mock_provider.fetch_hashtag_content(
-            hashtag="trending", count=5, region="US"
-        )
+        result = await mock_provider.fetch_hashtag_content(hashtag="trending", count=5, region="US")
 
         assert isinstance(result, list)
         assert len(result) <= 5
@@ -111,9 +108,7 @@ class TestMockProvider:
     @pytest.mark.asyncio
     async def test_fetch_unknown_hashtag(self, mock_provider):
         """Test fetching unknown hashtag returns generic data."""
-        result = await mock_provider.fetch_hashtag_content(
-            hashtag="nonexistent_hashtag", count=5
-        )
+        result = await mock_provider.fetch_hashtag_content(hashtag="nonexistent_hashtag", count=5)
 
         assert isinstance(result, list)
         # Should return generic data or empty list
@@ -185,11 +180,11 @@ class TestBaseProvider:
     def test_provider_interface(self):
         """Test that the provider interface is properly defined."""
         # Check that required methods exist
-        assert hasattr(TrendsProvider, 'fetch_trending')
-        assert hasattr(TrendsProvider, 'fetch_hashtag_content')
-        assert hasattr(TrendsProvider, 'health_check')
-        assert hasattr(TrendsProvider, 'provider_name')
-        assert hasattr(TrendsProvider, 'supported_regions')
+        assert hasattr(TrendsProvider, "fetch_trending")
+        assert hasattr(TrendsProvider, "fetch_hashtag_content")
+        assert hasattr(TrendsProvider, "health_check")
+        assert hasattr(TrendsProvider, "provider_name")
+        assert hasattr(TrendsProvider, "supported_regions")
 
 
 @pytest.mark.asyncio
